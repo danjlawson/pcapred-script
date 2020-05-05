@@ -14,9 +14,13 @@ It is likely that you do not have all of the libraries required to run the scrip
 
 ### What you need:
 
-Your data, in plink bim/bed/fam format.
+Your data, in plink bim/bed/fam format, pruned to the set of SNPs that are useful for PCA. For pruning, we recommend that you use plink. For example, this is how we pruned the 1000 Genomes data to the required SNP set:
 
-(Technical details: this needs to contain significant overlap in SNPs with the reference. You may need to impute to 1000 Genomes in order to use the default UK Biobank reference dataset, though you can build alternative references.)
+```{sh}
+plink2 --bfile data/1000G_phase3_common_norel --extract ../flashpca/pca_input_files/pca_input_final.bim --make-bed --out data/1000G_forpca
+```
+
+(Technical details: this needs to contain significant overlap in SNPs with the reference. You may need to impute to 1000 Genomes in order to use the default UK Biobank reference dataset, though you can build alternative references. You also have to ensure that your data are on the correct "Genome Build" (37) and strand - forward. However, you don't have to worry about coding of reference/alternative alleles.)
 
 ### Example application
 
@@ -33,7 +37,7 @@ This creates the file `examples/1000G_smallsubset.eigenvec.pred` which contains 
 We have provided reference datasets to access the first 100 or 200 PCs from the UK Biobank variation. These are available for download at XXXXX.
 
 ```{sh}
-pcapred.R --ref /path/to/pca_input_final_200
+./pcapred.R -f examples/1000G_smallsubset --ref /path/to/pca_input_final_200
 ```
 
 There are 3 files:
@@ -54,6 +58,8 @@ You can then give the data to pcapred with:
 ```
 ./pcapred.R --file dataroot
 ```
+
+If your data are large you will have problems.  In this case you probably are best doing tyour own QC and using flashpca directly.
 
 ## Output
 
@@ -122,59 +128,18 @@ system("plink2 --bfile data/1000G_phase3_common_norel --keep data/1000G_phase3_c
 
 ## Making your own data from UK Biobank
 
+This is how I generated the 200 PCs data for the UK Biobank dataset.
+
 ```{sh}
 plink2 --bfile pca_input_files/pca_input_final --freq --out pca_input_files/pca_input_final_200
 gzip pca_input_files/pca_input_final_200.afreq pca_input_files/pca_input_final_200.raw
 gzip flashpca_200.load
 ```
 
-## Toy data
-
-This is how I generated a small dataset for testing from UK Biobank.  In bash:
-
-```{sh}
-head -n 150 pca_input_files/pca_input_final.fam > pca_input_files/test_keep.fam
-head -n 400 pca_input_files/pca_input_final.bim | cut -f2 > pca_input_files/test_extract.bim
-plink1.9 --bfile pca_input_files/pca_input_final --keep pca_input_files/test_keep.fam --extract pca_input_files/test_extract.bim --make-bed --out pca_input_files/test
-```
-
-## Make summary data
-```{sh}
-plink2 --bfile pca_input_files/test --freq --out pca_input_files/test
-gzip pca_input_files/test.afreq
-```
-
-## Perform miss pca
-```{sh}
-plink2 --bfile pca_input_files/test --pca var-wts --out test
-gzip test.eigenvec.var
-flashpca_x86-64 --bfile pca_input_files/test --outpc test.pcs -d 50 --outval test.val --outload test.load --outpve test.pve
-gzip test.load
-zcat test.load.gz | ~/bin/transpose -t --limit 428759x52 | gzip -c > test.tload.gz
-```
-
-## Make nomiss data
-```{sh}
-plink1.9 --bfile pca_input_files/test -geno 0 --out pca_input_files/test_nomiss --make-bed
-plink1.9 --bfile pca_input_files/test_nomiss --recode A --out pca_input_files/test_nomiss
-plink2 --bfile pca_input_files/test_nomiss --freq --out pca_input_files/test_nomiss
-gzip pca_input_files/test_nomiss.afreq
-```
-
-## Perform nomiss pca
-```{sh}
-plink2 --bfile pca_input_files/test_nomiss --pca var-wts --out test_nomiss
-gzip test_nomiss.eigenvec.var
-flashpca_x86-64 --bfile pca_input_files/test_nomiss --outpc test_nomiss.pcs -d 50 --outval test_nomiss.val --outload test_nomiss.load --outpve test_nomiss.pve
-gzip test_nomiss.load
-zcat test_nomiss.load.gz | ~/bin/transpose -t --limit 428759x52 | gzip -c > test_nomiss.tload.gz
-```
-
 ## Final thoughts
 
 There is more to be done:
 
-* Process in batches
 * Checking of data with different coding
 * Automatic imputation.
 * Creation of additional SNP sets.

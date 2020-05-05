@@ -175,7 +175,7 @@ if(opt$verbose) cat(paste("Reading Data\n"))
 
 ## Read the raw data
 if(opt$verbose) cat(paste("... Reading SNP data of file to project: ",opt$file,"\n"))
-dat=readinput(opt$file,opt$raw,opt$verbose)
+dat=readbed(opt$file,opt$verbose)
 
 ## Read the eigenvalues
 if(is.null(opt$ref)){
@@ -202,11 +202,11 @@ if(opt$verbose) cat(paste("Performing Computation\n"))
 
 ## Perform the inference
 if(opt$verbose) cat(paste("... Computing predictions\n"))
-pred=predictpcs(dat,verbose=opt$verbose)
+pred=predictpca(dat,verbose=opt$verbose)
 
 ## Write output
 if(opt$verbose) cat(paste("Creating output\n"))
-write_pred(opt$out,dat$indinfo,pred)
+writepred(opt$out,dat$indinfo,pred)
 cat(paste("Written predicted eigenvectors to",opt$out,"\n"))
 
 ## Testing
