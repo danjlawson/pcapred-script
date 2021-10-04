@@ -120,7 +120,7 @@ This is how I generated the 1000 Genomes example dataset dataset. In R:
 
 ```{r}
 remote::install_github("privefl/bigsnpr")
-library*("bigsnpr")
+library("bigsnpr")
 download_1000G("data")
 system("sort -R data/1000G_phase3_common_norel.fam | head -n 100 > data/1000G_phase3_common_norel.indstokeep")
 system("plink2 --bfile data/1000G_phase3_common_norel --keep data/1000G_phase3_common_norel.indstokeep --extract ../flashpca/pca_input_files/pca_input_final.bim --make-bed --out data/1000G_smallsubset")
