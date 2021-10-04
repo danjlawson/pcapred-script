@@ -34,10 +34,10 @@ This creates the file `examples/1000G_smallsubset.eigenvec.pred` which contains 
 
 ### Further reference data
 
-We have provided reference datasets to access the first 100 or 200 PCs from the UK Biobank variation. These are available for download at XXXXX.
+We have provided reference datasets to access the first 18 PCs (included in [pcapred](https://github.com/danjlawson/pcapred) and [100/200 PCs](https://github.com/danjlawson/pcapred.largedata) from the UK Biobank variation. (They are in the /inst/extdata/ directory. Due to file size constraints, the 200 PCs version is created  the first time the package is called from R.)
 
 ```{sh}
-./pcapred.R -f examples/1000G_smallsubset --ref /path/to/pca_input_final_200
+./pcapred.R -f examples/1000G_smallsubset --ref /path/to/ukb_pcs_100
 ```
 
 There are 3 files:
@@ -45,7 +45,7 @@ There are 3 files:
 - .val # Contains the PC eigenvalues as output by flashpca_x86-64 --outval
 - .load.gz # Contains the SNP weights from the PC eigenvalues as output by flashpca_x86-64 --outload (then gzipped)
 
-From these, we can predict the PCs of any external data file that has a large number of overlapping SNPs with the reference, and perform essesntial QC
+From these, we can predict the PCs of any external data file that has a large number of overlapping SNPs with the reference, and perform essesntial QC.
 
 ### Your data
 
