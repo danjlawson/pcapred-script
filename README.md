@@ -1,4 +1,4 @@
-# pcapred
+# *pcapred* script format
 
 This R code allows you to predict PCA values in the UK Biobank reference data as a **script**. You do not need to be an R user to access it, as long as you have R installed. It uses the R package [pcapred](https://github.com/danjlawson/pcapred) which includes key reference data derived from the UK Biobank.
 
